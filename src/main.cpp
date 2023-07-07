@@ -46,6 +46,7 @@ void setup() {
     rfid_key.keyByte[i] = 0xFF;
   }
 
+  WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), IPAddress(1, 1, 1, 1), IPAddress(1, 0, 0, 1));
   WiFi.setHostname("RoAbsen");
   wifiMulti.addAP("Sinar Alam", "salma123");
   wifiMulti.addAP("Robotika Smaboy", "codeandbuild");
