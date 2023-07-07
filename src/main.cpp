@@ -68,6 +68,24 @@ void setup() {
 }
 
 /*
+ * Function: Connect Wi-Fi
+*/
+void checkConnectWifi() {
+  if (WiFi.status() != WL_CONNECTED) {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Connecting");
+    lcd.setCursor(0,1);
+    lcd.print("Wi-Fi");
+    while (wifiMulti.run(wifiTimeout) != WL_CONNECTED) {
+        lcd.print(".");
+        delay(500);
+    }
+    lcd.clear();
+  }
+}
+
+/*
  * Function: Clear one LCD line
 */
 void clearLCDLine(int line)
@@ -211,17 +229,7 @@ void loop(){
   stopRFIDAuth();
 
   // Connect Wi-Fi
-  if (WiFi.status() != WL_CONNECTED) {
-    lcd.setCursor(0,0);
-    lcd.print("Connecting");
-    lcd.setCursor(0,1);
-    lcd.print("Wi-Fi");
-    while (wifiMulti.run(wifiTimeout) != WL_CONNECTED) {
-        lcd.print(".");
-        delay(500);
-    }
-    lcd.clear();
-  }
+  checkConnectWifi();
 
   if(digitalRead(ROABSEN_ABSEN_PIN) == LOW) {
     lcd.clear();
