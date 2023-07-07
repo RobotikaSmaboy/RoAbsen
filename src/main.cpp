@@ -24,9 +24,8 @@ MFRC522 rfid(SDA_PIN);
 MFRC522::MIFARE_Key rfid_key; 
 
 // Initialize Wi-Fi (WifiMulti)
-// TODO: Support HTTPS
-// WiFiClient wifiClient;
-WiFiClientSecure wifiClient;
+WiFiClient wifiClient;
+WiFiClientSecure wifiClientSecure;
 ESP8266WiFiMulti wifiMulti;
 HTTPClient httpClient;
 const uint32_t wifiTimeout = 15000;
@@ -51,7 +50,7 @@ void setup() {
   wifiMulti.addAP("Sinar Alam", "salma123");
   wifiMulti.addAP("Robotika Smaboy", "codeandbuild");
   wifiMulti.addAP("SMABOY HOTSPOT", "smaboymonumental");
-  wifiClient.setInsecure();
+  wifiClientSecure.setInsecure();
   httpClient.useHTTP10(true);
 
   pinMode(ROABSEN_ABSEN_PIN, INPUT);
@@ -145,7 +144,12 @@ void sendAbsenRequest(String cardUid) {
   apiJson["card_uid"] = cardUid;
   serializeJson(apiJson, json);
 
-  httpClient.begin(wifiClient, (String)ROBOYS_API_ABSEN_URL);
+  if (String(ROBOYS_API_ABSEN_URL).startsWith("https://")) {
+    httpClient.begin(wifiClientSecure, ROBOYS_API_ABSEN_URL);
+  } else {
+    httpClient.begin(wifiClient, ROBOYS_API_ABSEN_URL);
+  }
+
   httpClient.addHeader("Content-Type", "application/json");
   httpClient.setAuthorization(ROBOYS_API_USERNAME, ROBOYS_API_PASSWORD);
   int req = httpClient.POST(json);
